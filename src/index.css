@@ -69,6 +69,36 @@
   --motif: '🐑';
 }
 
+[data-theme='space'] {
+  --bg-top: #9db0e8;
+  --bg-mid: #d4c4f2;
+  --bg-bottom: #f7e7c2;
+  --ink: #1c2348;
+  --muted: #3d4674;
+  --accent: #d4920a;
+  --accent-ink: #241c08;
+  --surface: rgba(255, 252, 245, 0.9);
+  --surface-strong: #f7f4ff;
+  --good: #1f8a5b;
+  --warn: #b8860b;
+  --motif: '🚀';
+}
+
+[data-theme='sea'] {
+  --bg-top: #127a96;
+  --bg-mid: #7ec8d4;
+  --bg-bottom: #e7f6c8;
+  --ink: #08323c;
+  --muted: #245864;
+  --accent: #e05a3c;
+  --accent-ink: #fff8f4;
+  --surface: rgba(255, 252, 245, 0.88);
+  --surface-strong: #f3fffb;
+  --good: #0f8a62;
+  --warn: #c47a12;
+  --motif: '🐠';
+}
+
 *,
 *::before,
 *::after {
@@ -450,6 +480,167 @@ a {
   accent-color: var(--accent);
 }
 
+.family-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  justify-content: center;
+  margin: 0.75rem 0 0.25rem;
+}
+
+.family-face {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  min-width: 4.4rem;
+  animation: bob 2.6s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * 100ms);
+}
+
+.family-row.is-cheer .family-face {
+  animation: wave 700ms ease;
+}
+
+.family-portrait {
+  width: 4.4rem;
+  height: 4.4rem;
+  display: grid;
+  place-items: center;
+  background: var(--surface-strong);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 0 rgba(20, 40, 30, 0.12);
+}
+
+.family-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.family-glyph {
+  font-size: 1.85rem;
+  line-height: 1;
+}
+
+.family-name {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.costume {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 0.95rem;
+  line-height: 1;
+  background: var(--surface-strong);
+  border-radius: 999px;
+  padding: 0.05rem 0.15rem;
+}
+
+.frame-trains { border-radius: 0.35rem 0.35rem 1.3rem 1.3rem; }
+.frame-planes { border-radius: 50%; }
+.frame-dinosaurs { border-radius: 50% 50% 42% 42%; }
+.frame-farm { border-radius: 0.2rem 0.2rem 1.5rem 1.5rem; }
+.frame-space { border-radius: 50%; box-shadow: inset 0 0 0 4px #c9d7ff; }
+.frame-sea { border-radius: 1.3rem; }
+
+.cast-editor {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.cast-editor .family-portrait {
+  width: 4.8rem;
+  height: 4.8rem;
+  flex: 0 0 auto;
+}
+
+.file-btn input {
+  display: none;
+}
+
+.count-stage.is-many .count-item {
+  font-size: 1.55rem;
+  flex: 0 0 18%;
+  text-align: center;
+}
+
+.count-face {
+  width: 2.4rem;
+  height: 2.4rem;
+  object-fit: cover;
+  border-radius: 0.6rem;
+}
+
+.count-stage.is-many .count-face {
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+.theme-burst {
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 1.6rem;
+}
+
+.theme-burst span {
+  animation: cheer 640ms ease both;
+  animation-delay: calc(var(--i, 0) * 40ms);
+  font-size: 1.35rem;
+}
+
+.hold-gate {
+  position: relative;
+  overflow: hidden;
+}
+
+.hold-gate .hold-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--p, 0) * 100%);
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.coach-list {
+  margin: 0.4rem 0 0;
+  padding-left: 1.1rem;
+  font-weight: 700;
+}
+
+html[data-contrast='high'] {
+  --surface: #ffffff;
+  --surface-strong: #ffffff;
+  --muted: #1a1a1a;
+}
+
+html[data-contrast='high'] .btn-tap,
+html[data-contrast='high'] .theme-chip,
+html[data-contrast='high'] .game-card-btn,
+html[data-contrast='high'] .family-portrait,
+html[data-contrast='high'] .panel {
+  outline: 2px solid currentColor;
+}
+
+html[data-contrast='high'] .theme-chip.is-selected {
+  outline: 4px solid var(--accent);
+  outline-offset: 2px;
+}
+
+html[data-motion='reduce'] .family-face,
+html[data-motion='reduce'] .count-item,
+html[data-motion='reduce'] .theme-burst span,
+html[data-motion='reduce'] .enter {
+  animation: none !important;
+}
+
 @keyframes bob {
   0%,
   100% {
@@ -457,6 +648,19 @@ a {
   }
   50% {
     transform: translateY(-6px);
+  }
+}
+
+@keyframes wave {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  35% {
+    transform: rotate(-10deg) translateY(-6px);
+  }
+  70% {
+    transform: rotate(8deg) translateY(-2px);
   }
 }
 

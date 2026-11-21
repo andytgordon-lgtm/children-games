@@ -9,11 +9,17 @@ import {
 import { speakPhoneme } from '../lib/speech'
 import { playSfx } from '../lib/audio'
 import type { FamilyCast } from '../lib/profiles'
+import type { MediaUrls } from '../lib/useFamilyMedia'
 import { FamilyCastRow } from '../components/FamilyCast'
+import { ThemeBurst } from '../components/ThemeBurst'
+import type { ThemeId } from '../themes/themes'
 
 type Props = {
   stars: number
   cast: FamilyCast
+  theme: ThemeId
+  photos?: MediaUrls
+  cartoons?: MediaUrls
   onStar: () => void
   onBack: () => void
 }
@@ -32,7 +38,7 @@ function makeRound(stars: number): Round {
   return { target, choices }
 }
 
-export function SoundMatch({ stars, cast, onStar, onBack }: Props) {
+export function SoundMatch({ stars, cast, theme, photos, cartoons, onStar, onBack }: Props) {
   const [round, setRound] = useState<Round>(() => makeRound(stars))
   const [picked, setPicked] = useState<string | null>(null)
   const [feedback, setFeedback] = useState('')
@@ -78,7 +84,15 @@ export function SoundMatch({ stars, cast, onStar, onBack }: Props) {
       </div>
       <h2 className="game-title">Sound Match</h2>
       <p className="lede">Listen, then tap the letter that matches.</p>
-      <FamilyCastRow cast={cast} cheer={cheer} highlight={['mum', 'dad', 'sister', 'dog']} />
+      <FamilyCastRow
+        cast={cast}
+        theme={theme}
+        photos={photos}
+        cartoons={cartoons}
+        cheer={cheer}
+        highlight={['mum', 'dad', 'sister', 'dog']}
+      />
+      <ThemeBurst theme={theme} show={cheer} />
 
       <div className="stack-gap" style={{ marginTop: '1rem' }}>
         <button type="button" className="speak-btn" onClick={playSound}>

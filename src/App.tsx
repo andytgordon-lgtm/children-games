@@ -22,6 +22,7 @@ import { FamilyCount } from './games/FamilyCount'
 import { Home, type GameId } from './pages/Home'
 import { Onboarding } from './pages/Onboarding'
 import { ParentSettings } from './pages/ParentSettings'
+import { useFamilyMedia } from './lib/useFamilyMedia'
 import type { ThemeId } from './themes/themes'
 
 type Screen = 'home' | 'settings' | GameId
@@ -29,9 +30,11 @@ type Screen = 'home' | 'settings' | GameId
 export default function App() {
   const [state, setState] = useState<AppState>(() => loadState())
   const [screen, setScreen] = useState<Screen>('home')
+  const [practiceWords, setPracticeWords] = useState<string[] | null>(null)
 
   const active = getActiveProfile(state)
   const theme: ThemeId = active?.theme ?? 'trains'
+  const media = useFamilyMedia(theme)
 
   useEffect(() => {
     initSpeech()
@@ -49,6 +52,11 @@ export default function App() {
     document.documentElement.dataset.theme = theme
     setAudioTheme(theme)
   }, [theme])
+
+  useEffect(() => {
+    document.documentElement.dataset.motion = state.reducedMotion ? 'reduce' : 'full'
+    document.documentElement.dataset.contrast = state.highContrast ? 'high' : 'normal'
+  }, [state.reducedMotion, state.highContrast])
 
   useEffect(() => {
     setMusicEnabled(state.musicEnabled)
@@ -103,9 +111,12 @@ export default function App() {
         <Home
           profile={active}
           cast={state.cast}
+          photos={media.photos}
+          cartoons={media.cartoons}
           musicEnabled={state.musicEnabled}
           onPlay={(game) => {
             void unlockAudio(theme)
+            setPracticeWords(null)
             setScreen(game)
           }}
           onTheme={(t) => {
@@ -128,6 +139,11 @@ export default function App() {
           activeId={state.activeProfileId}
           musicEnabled={state.musicEnabled}
           sfxEnabled={state.sfxEnabled}
+          reducedMotion={state.reducedMotion}
+          highContrast={state.highContrast}
+          theme={theme}
+          photos={media.photos}
+          cartoons={media.cartoons}
           onCastChange={(role: CastRole, name: string) =>
             setState((prev) => ({ ...prev, cast: { ...prev.cast, [role]: name } }))
           }
@@ -157,6 +173,13 @@ export default function App() {
             void unlockAudio(theme)
             setState((prev) => ({ ...prev, sfxEnabled: enabled }))
           }}
+          onReducedMotion={(enabled) => setState((prev) => ({ ...prev, reducedMotion: enabled }))}
+          onHighContrast={(enabled) => setState((prev) => ({ ...prev, highContrast: enabled }))}
+          onMediaChange={media.refresh}
+          onPractice={(words) => {
+            setPracticeWords(words)
+            setScreen('blend-quest')
+          }}
           onBack={() => setScreen('home')}
         />
       )}
@@ -165,6 +188,9 @@ export default function App() {
         <SoundMatch
           stars={active.stars}
           cast={state.cast}
+          theme={theme}
+          photos={media.photos}
+          cartoons={media.cartoons}
           onStar={awardStar}
           onBack={() => setScreen('home')}
         />
@@ -174,8 +200,15 @@ export default function App() {
         <BlendQuest
           stars={active.stars}
           cast={state.cast}
+          theme={theme}
+          photos={media.photos}
+          cartoons={media.cartoons}
+          practiceWords={practiceWords ?? undefined}
           onStar={awardStar}
-          onBack={() => setScreen('home')}
+          onBack={() => {
+            setPracticeWords(null)
+            setScreen('home')
+          }}
         />
       )}
 
@@ -184,6 +217,8 @@ export default function App() {
           stars={active.stars}
           theme={active.theme}
           cast={state.cast}
+          photos={media.photos}
+          cartoons={media.cartoons}
           onStar={awardStar}
           onBack={() => setScreen('home')}
         />
