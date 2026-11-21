@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import {
   maxUnlockedSet,
+  phonemeCue,
   pickRandom,
   shuffle,
   wordsUpTo,
@@ -56,7 +57,7 @@ export function BlendQuest({ stars, cast, theme, photos, cartoons, practiceWords
   const playBlend = async () => {
     if (busy) return
     setBusy(true)
-    await speakBlend(round.target.sounds, round.target.word)
+    await speakBlend(round.target.sounds.map(phonemeCue), round.target.word)
     setBusy(false)
   }
 
@@ -111,7 +112,7 @@ export function BlendQuest({ stars, cast, theme, photos, cartoons, practiceWords
         >
           <span className="speak-icon" aria-hidden>🔊</span>
           Sound it out
-          <span>{round.target.sounds.join(' · ')}</span>
+          <span>{round.target.sounds.map(phonemeCue).join(' · ')}</span>
         </button>
 
         <div className="choice-grid three" role="group" aria-label="Word choices">

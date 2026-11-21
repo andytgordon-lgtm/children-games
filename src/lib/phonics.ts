@@ -6,8 +6,10 @@ export const SETS: SetId[] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 export type Grapheme = {
   letter: string
-  /** Spoken cue for TTS (pure phoneme where helpful) */
+  /** Pure-sound cue respelled for the device voice, e.g. 'sss' not the letter name */
   sound: string
+  /** Model word the sound is heard in */
+  key: string
   set: SetId
 }
 
@@ -17,31 +19,76 @@ export type CvcWord = {
   set: SetId
 }
 
-/** Phase 2 grapheme sets in teaching order */
+/** Pure-sound respellings for graphemes as they appear inside words (Blend Quest) */
+const PHONEME_CUE: Record<string, string> = {
+  s: 'sss',
+  a: 'ah',
+  t: 'tuh',
+  p: 'puh',
+  i: 'ih',
+  n: 'nnn',
+  m: 'mmm',
+  d: 'duh',
+  g: 'guh',
+  o: 'oh',
+  c: 'cuh',
+  k: 'kuh',
+  e: 'eh',
+  u: 'uh',
+  r: 'rrr',
+  h: 'huh',
+  b: 'buh',
+  f: 'fff',
+  l: 'lll',
+  sh: 'sh',
+  ch: 'ch',
+  th: 'th',
+  ng: 'ng',
+  ai: 'ay',
+  ee: 'ee',
+  igh: 'eye',
+  oa: 'oh',
+  ar: 'ar',
+  or: 'or',
+  ur: 'ur',
+  ow: 'ow',
+  oi: 'oy',
+  ay: 'ay',
+  'a-e': 'ay',
+  ea: 'ee',
+  oy: 'oy',
+}
+
+/** The cue spoken for a grapheme inside a word, e.g. blending 's a t' */
+export function phonemeCue(grapheme: string): string {
+  return PHONEME_CUE[grapheme] ?? grapheme
+}
+
+/** Phase 2 grapheme sets in teaching order. Sounds are pure sounds, never letter names. */
 export const PHASE2_GRAPHEMES: Grapheme[] = [
-  { letter: 's', sound: 'sss', set: 1 },
-  { letter: 'a', sound: 'a', set: 1 },
-  { letter: 't', sound: 't', set: 1 },
-  { letter: 'p', sound: 'p', set: 1 },
-  { letter: 'i', sound: 'i', set: 2 },
-  { letter: 'n', sound: 'n', set: 2 },
-  { letter: 'm', sound: 'mmm', set: 2 },
-  { letter: 'd', sound: 'd', set: 2 },
-  { letter: 'g', sound: 'g', set: 3 },
-  { letter: 'o', sound: 'o', set: 3 },
-  { letter: 'c', sound: 'c', set: 3 },
-  { letter: 'k', sound: 'k', set: 3 },
-  { letter: 'ck', sound: 'ck', set: 4 },
-  { letter: 'e', sound: 'e', set: 4 },
-  { letter: 'u', sound: 'u', set: 4 },
-  { letter: 'r', sound: 'rrr', set: 4 },
-  { letter: 'h', sound: 'h', set: 5 },
-  { letter: 'b', sound: 'b', set: 5 },
-  { letter: 'f', sound: 'fff', set: 5 },
-  { letter: 'ff', sound: 'fff', set: 5 },
-  { letter: 'l', sound: 'lll', set: 5 },
-  { letter: 'll', sound: 'lll', set: 5 },
-  { letter: 'ss', sound: 'sss', set: 5 },
+  { letter: 's', sound: 'sss', key: 'sun', set: 1 },
+  { letter: 'a', sound: 'ah', key: 'ant', set: 1 },
+  { letter: 't', sound: 'tuh', key: 'tap', set: 1 },
+  { letter: 'p', sound: 'puh', key: 'pen', set: 1 },
+  { letter: 'i', sound: 'ih', key: 'ink', set: 2 },
+  { letter: 'n', sound: 'nnn', key: 'net', set: 2 },
+  { letter: 'm', sound: 'mmm', key: 'mop', set: 2 },
+  { letter: 'd', sound: 'duh', key: 'dog', set: 2 },
+  { letter: 'g', sound: 'guh', key: 'got', set: 3 },
+  { letter: 'o', sound: 'oh', key: 'ox', set: 3 },
+  { letter: 'c', sound: 'cuh', key: 'cat', set: 3 },
+  { letter: 'k', sound: 'kuh', key: 'kit', set: 3 },
+  { letter: 'ck', sound: 'kuh', key: 'sock', set: 4 },
+  { letter: 'e', sound: 'eh', key: 'egg', set: 4 },
+  { letter: 'u', sound: 'uh', key: 'up', set: 4 },
+  { letter: 'r', sound: 'rrr', key: 'run', set: 4 },
+  { letter: 'h', sound: 'huh', key: 'hat', set: 5 },
+  { letter: 'b', sound: 'buh', key: 'bug', set: 5 },
+  { letter: 'f', sound: 'fff', key: 'frog', set: 5 },
+  { letter: 'ff', sound: 'fff', key: 'huff', set: 5 },
+  { letter: 'l', sound: 'lll', key: 'leg', set: 5 },
+  { letter: 'll', sound: 'lll', key: 'bell', set: 5 },
+  { letter: 'ss', sound: 'sss', key: 'miss', set: 5 },
 ]
 
 export const PHASE2_WORDS: CvcWord[] = [
@@ -111,26 +158,26 @@ export const PHASE2_WORDS: CvcWord[] = [
 ]
 
 const PHASE3_GRAPHEMES: Grapheme[] = [
-  { letter: 'sh', sound: 'sh', set: 6 },
-  { letter: 'ch', sound: 'ch', set: 6 },
-  { letter: 'th', sound: 'th', set: 6 },
-  { letter: 'ng', sound: 'ng', set: 6 },
-  { letter: 'ai', sound: 'ai', set: 7 },
-  { letter: 'ee', sound: 'ee', set: 7 },
-  { letter: 'igh', sound: 'igh', set: 7 },
-  { letter: 'oa', sound: 'oa', set: 7 },
-  { letter: 'ar', sound: 'ar', set: 8 },
-  { letter: 'or', sound: 'or', set: 8 },
-  { letter: 'ur', sound: 'ur', set: 8 },
-  { letter: 'ow', sound: 'ow', set: 8 },
-  { letter: 'oi', sound: 'oi', set: 8 },
+  { letter: 'sh', sound: 'sh', key: 'shop', set: 6 },
+  { letter: 'ch', sound: 'ch', key: 'chop', set: 6 },
+  { letter: 'th', sound: 'th', key: 'thin', set: 6 },
+  { letter: 'ng', sound: 'ng', key: 'ring', set: 6 },
+  { letter: 'ai', sound: 'ay', key: 'rain', set: 7 },
+  { letter: 'ee', sound: 'ee', key: 'feet', set: 7 },
+  { letter: 'igh', sound: 'eye', key: 'light', set: 7 },
+  { letter: 'oa', sound: 'oh', key: 'boat', set: 7 },
+  { letter: 'ar', sound: 'ar', key: 'park', set: 8 },
+  { letter: 'or', sound: 'or', key: 'fork', set: 8 },
+  { letter: 'ur', sound: 'ur', key: 'burn', set: 8 },
+  { letter: 'ow', sound: 'ow', key: 'cow', set: 8 },
+  { letter: 'oi', sound: 'oy', key: 'coin', set: 8 },
 ]
 
 const PHASE5_GRAPHEMES: Grapheme[] = [
-  { letter: 'ay', sound: 'ay', set: 9 },
-  { letter: 'a-e', sound: 'ay', set: 9 },
-  { letter: 'ea', sound: 'ee', set: 9 },
-  { letter: 'oy', sound: 'oy', set: 9 },
+  { letter: 'ay', sound: 'ay', key: 'day', set: 9 },
+  { letter: 'a-e', sound: 'ay', key: 'cake', set: 9 },
+  { letter: 'ea', sound: 'ee', key: 'sea', set: 9 },
+  { letter: 'oy', sound: 'oy', key: 'toy', set: 9 },
 ]
 
 export const ALL_GRAPHEMES: Grapheme[] = [...PHASE2_GRAPHEMES, ...PHASE3_GRAPHEMES, ...PHASE5_GRAPHEMES]
@@ -200,7 +247,7 @@ export function shuffle<T>(items: T[]): T[] {
   const copy = [...items]
   for (let i = copy.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
-    ;[copy[i], copy[j]] = [copy[j]!, copy[i]!]
+    ;[copy[i], copy[j]!] = [copy[j]!, copy[i]!]
   }
   return copy
 }

@@ -6,7 +6,7 @@ import {
   shuffle,
   type Grapheme,
 } from '../lib/phonics'
-import { speakPhoneme } from '../lib/speech'
+import { speakPhoneme, speakWord } from '../lib/speech'
 import { playSfx } from '../lib/audio'
 import type { FamilyCast } from '../lib/profiles'
 import type { MediaUrls } from '../lib/useFamilyMedia'
@@ -34,7 +34,8 @@ function makeRound(stars: number): Round {
   const unlocked = maxUnlockedSet(stars)
   const pool = graphemesUpTo(unlocked)
   const target = pickRandom(pool)
-  const distractors = shuffle(pool.filter((g) => g.letter !== target.letter)).slice(0, 3)
+  // Never offer two spellings of the same sound (e.g. c and k) as choices
+  const distractors = shuffle(pool.filter((g) => g.sound !== target.sound)).slice(0, 3)
   const choices = shuffle([target, ...distractors])
   return { target, choices }
 }
@@ -49,7 +50,10 @@ export function SoundMatch({ stars, cast, theme, photos, cartoons, onStar, onBac
   const playSound = () => {
     setSpeaking(true)
     speakPhoneme(round.target.sound)
-    window.setTimeout(() => setSpeaking(false), 900)
+    window.setTimeout(() => {
+      speakWord(round.target.key)
+      setSpeaking(false)
+    }, 900)
   }
 
   const choose = (letter: string) => {
