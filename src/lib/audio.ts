@@ -13,6 +13,8 @@ const THEME_AMBIENT: Record<ThemeId, ThemeAmbient> = {
   planes: { frequencies: [146.83, 220, 293.66], pulseHz: 0.22, detune: 2 },
   dinosaurs: { frequencies: [98, 146.83, 196], pulseHz: 0.28, detune: 8 },
   farm: { frequencies: [130.81, 196, 261.63], pulseHz: 0.4, detune: 3 },
+  space: { frequencies: [87.31, 130.81, 174.61], pulseHz: 0.16, detune: 6 },
+  sea: { frequencies: [123.47, 164.81, 246.94], pulseHz: 0.2, detune: 3 },
 }
 
 const MUSIC_GAIN = 0.045

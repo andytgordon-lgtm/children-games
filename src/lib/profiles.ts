@@ -18,6 +18,8 @@ export type AppState = {
   cast: FamilyCast
   musicEnabled: boolean
   sfxEnabled: boolean
+  reducedMotion: boolean
+  highContrast: boolean
 }
 
 const STORAGE_KEY = 'sound-world-v1'
@@ -32,6 +34,19 @@ export const DEFAULT_CAST: FamilyCast = {
 }
 
 export const CAST_ROLES: CastRole[] = ['mum', 'dad', 'brother', 'sister', 'dog', 'cat']
+
+export function isPet(role: CastRole): boolean {
+  return role === 'dog' || role === 'cat'
+}
+
+export const ROLE_GLYPH: Record<CastRole, string> = {
+  mum: '👩',
+  dad: '👨',
+  brother: '👦',
+  sister: '👧',
+  dog: '🐶',
+  cat: '🐱',
+}
 
 function uid(): string {
   return `child-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`
@@ -48,6 +63,8 @@ export function loadState(): AppState {
       cast: { ...DEFAULT_CAST, ...(parsed.cast ?? {}) },
       musicEnabled: parsed.musicEnabled !== false,
       sfxEnabled: parsed.sfxEnabled !== false,
+      reducedMotion: parsed.reducedMotion === true,
+      highContrast: parsed.highContrast === true,
     }
   } catch {
     return emptyState()
@@ -61,6 +78,8 @@ function emptyState(): AppState {
     cast: { ...DEFAULT_CAST },
     musicEnabled: true,
     sfxEnabled: true,
+    reducedMotion: false,
+    highContrast: false,
   }
 }
 

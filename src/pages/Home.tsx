@@ -1,5 +1,6 @@
-import { maxUnlockedSet, STARS_TO_UNLOCK_SET } from '../lib/phonics'
+import { countCeiling, maxUnlockedSet, SETS, setTitle, STARS_TO_UNLOCK_SET } from '../lib/phonics'
 import type { ChildProfile, FamilyCast } from '../lib/profiles'
+import type { MediaUrls } from '../lib/useFamilyMedia'
 import { getTheme, THEMES, type ThemeId } from '../themes/themes'
 import { FamilyCastRow } from '../components/FamilyCast'
 
@@ -8,6 +9,8 @@ export type GameId = 'sound-match' | 'blend-quest' | 'family-count'
 type Props = {
   profile: ChildProfile
   cast: FamilyCast
+  photos?: MediaUrls
+  cartoons?: MediaUrls
   musicEnabled: boolean
   onPlay: (game: GameId) => void
   onTheme: (theme: ThemeId) => void
@@ -19,6 +22,8 @@ type Props = {
 export function Home({
   profile,
   cast,
+  photos,
+  cartoons,
   musicEnabled,
   onPlay,
   onTheme,
@@ -28,6 +33,7 @@ export function Home({
 }: Props) {
   const theme = getTheme(profile.theme)
   const unlocked = maxUnlockedSet(profile.stars)
+  const ceiling = countCeiling(profile.stars)
 
   return (
     <section className="enter stack-gap">
@@ -41,7 +47,13 @@ export function Home({
         </p>
       </header>
 
-      <FamilyCastRow cast={cast} highlight={['mum', 'dad', 'brother', 'sister']} />
+      <FamilyCastRow
+        cast={cast}
+        theme={profile.theme}
+        photos={photos}
+        cartoons={cartoons}
+        highlight={['mum', 'dad', 'brother', 'sister']}
+      />
 
       <div className="row-actions">
         <div className="stars-pill">★ {profile.stars} stars</div>
@@ -91,14 +103,16 @@ export function Home({
         </button>
         <button type="button" className="game-card-btn" onClick={() => onPlay('family-count')}>
           <strong>Family Count</strong>
-          <span>Count 1–10 in your {theme.label.toLowerCase()} world</span>
+          <span>
+            Count 1–{ceiling} in your {theme.label.toLowerCase()} world
+          </span>
         </button>
       </nav>
 
       <div className="panel">
         <strong style={{ fontFamily: 'var(--font-display)' }}>Letters and Sounds progress</strong>
-        <div className="progress-strip" aria-label="Unlocked phase 2 sets">
-          {([1, 2, 3, 4, 5] as const).map((set) => (
+        <div className="progress-strip" aria-label="Unlocked sound sets">
+          {SETS.map((set) => (
             <span
               key={set}
               className={`progress-chip ${set <= unlocked ? 'is-open' : ''}`}
@@ -108,7 +122,7 @@ export function Home({
                   : `Set ${set} opens at ${STARS_TO_UNLOCK_SET[set]} stars`
               }
             >
-              Set {set}
+              {setTitle(set)}
               {set <= unlocked ? ' ✓' : ` · ${STARS_TO_UNLOCK_SET[set]}★`}
             </span>
           ))}

@@ -1,47 +1,56 @@
 import { useState } from 'react'
-import { pickRandom, shuffle } from '../lib/phonics'
+import { countCeiling, pickRandom, shuffle } from '../lib/phonics'
 import { speakWord } from '../lib/speech'
 import { playSfx } from '../lib/audio'
 import type { FamilyCast } from '../lib/profiles'
-import { CAST_ROLES } from '../lib/profiles'
+import { CAST_ROLES, ROLE_GLYPH } from '../lib/profiles'
+import type { MediaUrls } from '../lib/useFamilyMedia'
 import { FamilyCastRow } from '../components/FamilyCast'
+import { ThemeBurst } from '../components/ThemeBurst'
 import { THEME_COUNT_GLYPHS, type ThemeId } from '../themes/themes'
 
 type Props = {
   stars: number
   theme: ThemeId
   cast: FamilyCast
+  photos?: MediaUrls
+  cartoons?: MediaUrls
   onStar: () => void
   onBack: () => void
 }
 
+type Glyph = { kind: 'emoji'; emoji: string } | { kind: 'face'; src: string }
+
 type Round = {
   count: number
-  glyphs: string[]
+  glyphs: Glyph[]
   choices: number[]
 }
 
-function makeRound(theme: ThemeId): Round {
-  const count = 1 + Math.floor(Math.random() * 10)
-  const themeGlyphs = THEME_COUNT_GLYPHS[theme]
-  const familyGlyphs = CAST_ROLES.map((r) => {
-    const map = { mum: '👩', dad: '👨', brother: '👦', sister: '👧', dog: '🐶', cat: '🐱' } as const
-    return map[r]
+function makeRound(theme: ThemeId, stars: number, photos: MediaUrls | undefined, cartoons: MediaUrls | undefined): Round {
+  const ceiling = countCeiling(stars)
+  const count = 1 + Math.floor(Math.random() * ceiling)
+  const faces = CAST_ROLES.flatMap((role) => {
+    const src = cartoons?.[role] ?? photos?.[role]
+    return src ? [{ kind: 'face' as const, src }] : []
   })
-  const pool = [...themeGlyphs, ...familyGlyphs]
-  const glyph = pickRandom(pool)
+  const emojis: Glyph[] = [...THEME_COUNT_GLYPHS[theme], ...CAST_ROLES.map((role) => ROLE_GLYPH[role])].map((emoji) => ({
+    kind: 'emoji',
+    emoji,
+  }))
+  const glyph = faces.length > 0 && Math.random() < 0.45 ? pickRandom(faces) : pickRandom(emojis)
   const glyphs = Array.from({ length: count }, () => glyph)
 
   const wrong = new Set<number>()
   while (wrong.size < 3) {
-    const n = 1 + Math.floor(Math.random() * 10)
+    const n = 1 + Math.floor(Math.random() * ceiling)
     if (n !== count) wrong.add(n)
   }
   return { count, glyphs, choices: shuffle([count, ...wrong]) }
 }
 
-export function FamilyCount({ stars, theme, cast, onStar, onBack }: Props) {
-  const [round, setRound] = useState<Round>(() => makeRound(theme))
+export function FamilyCount({ stars, theme, cast, photos, cartoons, onStar, onBack }: Props) {
+  const [round, setRound] = useState<Round>(() => makeRound(theme, stars, photos, cartoons))
   const [picked, setPicked] = useState<number | null>(null)
   const [feedback, setFeedback] = useState('')
   const [cheer, setCheer] = useState(false)
@@ -57,7 +66,7 @@ export function FamilyCount({ stars, theme, cast, onStar, onBack }: Props) {
       speakWord(String(n))
       onStar()
       window.setTimeout(() => {
-        setRound(makeRound(theme))
+        setRound(makeRound(theme, stars + 1, photos, cartoons))
         setPicked(null)
         setFeedback('')
         setCheer(false)
@@ -82,14 +91,22 @@ export function FamilyCount({ stars, theme, cast, onStar, onBack }: Props) {
       </div>
       <h2 className="game-title">Family Count</h2>
       <p className="lede">How many can you count?</p>
-      <FamilyCastRow cast={cast} cheer={cheer} />
+      <FamilyCastRow cast={cast} theme={theme} photos={photos} cartoons={cartoons} cheer={cheer} />
+      <ThemeBurst theme={theme} show={cheer} />
 
-      <div className="count-stage" aria-label={`${round.count} items to count`}>
-        {round.glyphs.map((g, i) => (
-          <span key={`${g}-${i}`} className="count-item" style={{ ['--i' as string]: i }}>
-            {g}
-          </span>
-        ))}
+      <div
+        className={`count-stage ${round.count > 10 ? 'is-many' : ''}`}
+        aria-label="Items to count"
+      >
+        {round.glyphs.map((glyph, i) =>
+          glyph.kind === 'face' ? (
+            <img key={`face-${i}`} className="count-item count-face" src={glyph.src} alt="" style={{ ['--i' as string]: i }} />
+          ) : (
+            <span key={`${glyph.emoji}-${i}`} className="count-item" style={{ ['--i' as string]: i }}>
+              {glyph.emoji}
+            </span>
+          ),
+        )}
       </div>
 
       <div className="choice-grid" role="group" aria-label="Number choices" style={{ marginTop: '1rem' }}>

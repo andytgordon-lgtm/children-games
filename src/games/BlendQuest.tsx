@@ -9,11 +9,18 @@ import {
 import { speakBlend, speakWord } from '../lib/speech'
 import { playSfx } from '../lib/audio'
 import type { FamilyCast } from '../lib/profiles'
+import type { MediaUrls } from '../lib/useFamilyMedia'
 import { FamilyCastRow } from '../components/FamilyCast'
+import { ThemeBurst } from '../components/ThemeBurst'
+import type { ThemeId } from '../themes/themes'
 
 type Props = {
   stars: number
   cast: FamilyCast
+  theme: ThemeId
+  photos?: MediaUrls
+  cartoons?: MediaUrls
+  practiceWords?: string[]
   onStar: () => void
   onBack: () => void
 }
@@ -23,10 +30,11 @@ type Round = {
   choices: string[]
 }
 
-function makeRound(stars: number): Round {
+function makeRound(stars: number, practiceWords?: string[]): Round {
   const unlocked = maxUnlockedSet(stars)
   const pool = wordsUpTo(unlocked)
-  const target = pickRandom(pool)
+  const practice = (practiceWords ?? []).filter((word) => pool.some((entry) => entry.word === word))
+  const target = practice.length > 0 ? pool.find((entry) => entry.word === pickRandom(practice)) ?? pickRandom(pool) : pickRandom(pool)
   const distractors = shuffle(pool.filter((w) => w.word !== target.word))
     .slice(0, 2)
     .map((w) => w.word)
@@ -36,8 +44,8 @@ function makeRound(stars: number): Round {
   return { target, choices: shuffle([target.word, ...distractors.slice(0, 2)]) }
 }
 
-export function BlendQuest({ stars, cast, onStar, onBack }: Props) {
-  const [round, setRound] = useState<Round>(() => makeRound(stars))
+export function BlendQuest({ stars, cast, theme, photos, cartoons, practiceWords, onStar, onBack }: Props) {
+  const [round, setRound] = useState<Round>(() => makeRound(stars, practiceWords))
   const [picked, setPicked] = useState<string | null>(null)
   const [feedback, setFeedback] = useState('')
   const [busy, setBusy] = useState(false)
@@ -61,7 +69,7 @@ export function BlendQuest({ stars, cast, onStar, onBack }: Props) {
       speakWord(word)
       onStar()
       window.setTimeout(() => {
-        setRound(makeRound(stars + 1))
+        setRound(makeRound(stars + 1, practiceWords))
         setPicked(null)
         setFeedback('')
         setCheer(false)
@@ -87,7 +95,15 @@ export function BlendQuest({ stars, cast, onStar, onBack }: Props) {
       </div>
       <h2 className="game-title">Blend Quest</h2>
       <p className="lede">Hear the sounds, blend them, tap the word.</p>
-      <FamilyCastRow cast={cast} cheer={cheer} highlight={['brother', 'sister', 'mum', 'cat']} />
+      <FamilyCastRow
+        cast={cast}
+        theme={theme}
+        photos={photos}
+        cartoons={cartoons}
+        cheer={cheer}
+        highlight={['brother', 'sister', 'mum', 'cat']}
+      />
+      <ThemeBurst theme={theme} show={cheer} />
 
       <div className="stack-gap" style={{ marginTop: '1rem' }}>
         <button type="button" className="speak-btn" onClick={() => void playBlend()} disabled={busy}>
