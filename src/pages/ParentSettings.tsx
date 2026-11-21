@@ -150,14 +150,15 @@ export function ParentSettings({
           <button
             type="button"
             className="btn btn-primary hold-gate"
-            style={{ width: '100%', ['--p' as string]: hold }}
+            style={{ width: '100%' }}
             onPointerDown={startHold}
             onPointerUp={stopHold}
             onPointerLeave={stopHold}
             onPointerCancel={stopHold}
+            aria-label="Hold to open parent coach"
           >
-            <span className="hold-fill" />
-            Hold to open coach
+            <span className="hold-fill" style={{ ['--p' as string]: hold }} />
+            {hold > 0 ? 'Keep holding…' : 'Hold to open coach'}
           </button>
         ) : (
           <div className="stack-gap" style={{ marginTop: '0.75rem' }}>
@@ -186,16 +187,17 @@ export function ParentSettings({
         <div className="stack-gap" style={{ marginTop: '0.85rem', gap: '0.65rem' }}>
           <label className="toggle-row" htmlFor="music-toggle">
             <span>Background music</span>
-            <input id="music-toggle" type="checkbox" checked={musicEnabled} onChange={(e) => onMusicEnabled(e.target.checked)} />
+            <input id="music-toggle" className="switch" type="checkbox" checked={musicEnabled} onChange={(e) => onMusicEnabled(e.target.checked)} />
           </label>
           <label className="toggle-row" htmlFor="sfx-toggle">
             <span>Game sounds</span>
-            <input id="sfx-toggle" type="checkbox" checked={sfxEnabled} onChange={(e) => onSfxEnabled(e.target.checked)} />
+            <input id="sfx-toggle" className="switch" type="checkbox" checked={sfxEnabled} onChange={(e) => onSfxEnabled(e.target.checked)} />
           </label>
           <label className="toggle-row" htmlFor="motion-toggle">
             <span>Reduce motion</span>
             <input
               id="motion-toggle"
+              className="switch"
               type="checkbox"
               checked={reducedMotion}
               onChange={(e) => onReducedMotion(e.target.checked)}
@@ -205,6 +207,7 @@ export function ParentSettings({
             <span>Higher contrast</span>
             <input
               id="contrast-toggle"
+              className="switch"
               type="checkbox"
               checked={highContrast}
               onChange={(e) => onHighContrast(e.target.checked)}
@@ -276,31 +279,14 @@ export function ParentSettings({
 
       <div className="panel">
         <strong style={{ fontFamily: 'var(--font-display)', fontSize: '1.15rem' }}>Child profiles</strong>
-        <ul style={{ listStyle: 'none', padding: 0, margin: '0.85rem 0 0' }}>
+        <ul className="profile-list">
           {profiles.map((p) => (
-            <li
-              key={p.id}
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '0.5rem',
-                alignItems: 'center',
-                marginBottom: '0.65rem',
-              }}
-            >
+            <li key={p.id} className="profile-row">
               <input
                 aria-label={`Rename ${p.name}`}
                 value={p.name}
                 maxLength={24}
                 onChange={(e) => onRenameProfile(p.id, e.target.value)}
-                style={{
-                  flex: '1 1 8rem',
-                  minHeight: '2.75rem',
-                  borderRadius: '0.9rem',
-                  border: '2px solid rgba(20,40,30,0.12)',
-                  padding: '0.4rem 0.75rem',
-                  background: 'var(--surface-strong)',
-                }}
               />
               <button
                 type="button"
@@ -309,7 +295,7 @@ export function ParentSettings({
               >
                 {p.id === activeId ? 'Playing' : 'Play'}
               </button>
-              <span style={{ fontWeight: 800 }}>★ {p.stars}</span>
+              <span className="profile-stars">★ {p.stars}</span>
             </li>
           ))}
         </ul>

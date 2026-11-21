@@ -11,6 +11,7 @@ import { playSfx } from '../lib/audio'
 import type { FamilyCast } from '../lib/profiles'
 import type { MediaUrls } from '../lib/useFamilyMedia'
 import { FamilyCastRow } from '../components/FamilyCast'
+import { GameHeader } from '../components/GameHeader'
 import { ThemeBurst } from '../components/ThemeBurst'
 import type { ThemeId } from '../themes/themes'
 
@@ -50,6 +51,7 @@ export function BlendQuest({ stars, cast, theme, photos, cartoons, practiceWords
   const [feedback, setFeedback] = useState('')
   const [busy, setBusy] = useState(false)
   const [cheer, setCheer] = useState(false)
+  const speaking = busy
 
   const playBlend = async () => {
     if (busy) return
@@ -87,12 +89,7 @@ export function BlendQuest({ stars, cast, theme, photos, cartoons, practiceWords
 
   return (
     <section className="enter">
-      <div className="game-header">
-        <button type="button" className="btn btn-ghost" onClick={onBack}>
-          ← Home
-        </button>
-        <div className="stars-pill">★ {stars}</div>
-      </div>
+      <GameHeader onBack={onBack} stars={stars} celebrate={cheer} />
       <h2 className="game-title">Blend Quest</h2>
       <p className="lede">Hear the sounds, blend them, tap the word.</p>
       <FamilyCastRow
@@ -106,8 +103,14 @@ export function BlendQuest({ stars, cast, theme, photos, cartoons, practiceWords
       <ThemeBurst theme={theme} show={cheer} />
 
       <div className="stack-gap" style={{ marginTop: '1rem' }}>
-        <button type="button" className="speak-btn" onClick={() => void playBlend()} disabled={busy}>
-          🔊 Sound it out
+        <button
+          type="button"
+          className={`speak-btn ${speaking ? 'is-speaking' : ''}`}
+          onClick={() => void playBlend()}
+          disabled={busy}
+        >
+          <span className="speak-icon" aria-hidden>🔊</span>
+          Sound it out
           <span>{round.target.sounds.join(' · ')}</span>
         </button>
 

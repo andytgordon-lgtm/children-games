@@ -6,6 +6,7 @@ import type { FamilyCast } from '../lib/profiles'
 import { CAST_ROLES, ROLE_GLYPH } from '../lib/profiles'
 import type { MediaUrls } from '../lib/useFamilyMedia'
 import { FamilyCastRow } from '../components/FamilyCast'
+import { GameHeader } from '../components/GameHeader'
 import { ThemeBurst } from '../components/ThemeBurst'
 import { THEME_COUNT_GLYPHS, type ThemeId } from '../themes/themes'
 
@@ -83,12 +84,7 @@ export function FamilyCount({ stars, theme, cast, photos, cartoons, onStar, onBa
 
   return (
     <section className="enter">
-      <div className="game-header">
-        <button type="button" className="btn btn-ghost" onClick={onBack}>
-          ← Home
-        </button>
-        <div className="stars-pill">★ {stars}</div>
-      </div>
+      <GameHeader onBack={onBack} stars={stars} celebrate={cheer} />
       <h2 className="game-title">Family Count</h2>
       <p className="lede">How many can you count?</p>
       <FamilyCastRow cast={cast} theme={theme} photos={photos} cartoons={cartoons} cheer={cheer} />

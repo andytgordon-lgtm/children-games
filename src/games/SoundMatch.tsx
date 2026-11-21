@@ -11,6 +11,7 @@ import { playSfx } from '../lib/audio'
 import type { FamilyCast } from '../lib/profiles'
 import type { MediaUrls } from '../lib/useFamilyMedia'
 import { FamilyCastRow } from '../components/FamilyCast'
+import { GameHeader } from '../components/GameHeader'
 import { ThemeBurst } from '../components/ThemeBurst'
 import type { ThemeId } from '../themes/themes'
 
@@ -43,8 +44,13 @@ export function SoundMatch({ stars, cast, theme, photos, cartoons, onStar, onBac
   const [picked, setPicked] = useState<string | null>(null)
   const [feedback, setFeedback] = useState('')
   const [cheer, setCheer] = useState(false)
+  const [speaking, setSpeaking] = useState(false)
 
-  const playSound = () => speakPhoneme(round.target.sound)
+  const playSound = () => {
+    setSpeaking(true)
+    speakPhoneme(round.target.sound)
+    window.setTimeout(() => setSpeaking(false), 900)
+  }
 
   const choose = (letter: string) => {
     if (picked) return
@@ -74,14 +80,7 @@ export function SoundMatch({ stars, cast, theme, photos, cartoons, onStar, onBac
 
   return (
     <section className="enter">
-      <div className="game-header">
-        <button type="button" className="btn btn-ghost" onClick={onBack}>
-          ← Home
-        </button>
-        <div className="stars-pill" aria-label={`${stars} stars`}>
-          ★ {stars}
-        </div>
-      </div>
+      <GameHeader onBack={onBack} stars={stars} celebrate={cheer} />
       <h2 className="game-title">Sound Match</h2>
       <p className="lede">Listen, then tap the letter that matches.</p>
       <FamilyCastRow
@@ -95,8 +94,9 @@ export function SoundMatch({ stars, cast, theme, photos, cartoons, onStar, onBac
       <ThemeBurst theme={theme} show={cheer} />
 
       <div className="stack-gap" style={{ marginTop: '1rem' }}>
-        <button type="button" className="speak-btn" onClick={playSound}>
-          🔊 Hear the sound
+        <button type="button" className={`speak-btn ${speaking ? 'is-speaking' : ''}`} onClick={playSound}>
+          <span className="speak-icon" aria-hidden>🔊</span>
+          Hear the sound
           <span>Tap me, then pick the letter</span>
         </button>
 

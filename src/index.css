@@ -245,8 +245,14 @@ a {
 }
 
 .btn-tap.is-wrong {
-  background: #e8b4a8;
-  animation: shake 360ms ease;
+  background: var(--surface-strong);
+  color: var(--muted);
+  opacity: 0.55;
+  box-shadow: none;
+}
+
+.btn-tap:disabled {
+  opacity: 0.55;
 }
 
 .panel {
@@ -280,6 +286,11 @@ a {
   padding: 0.35rem 0.75rem;
   font-weight: 800;
   font-family: var(--font-display);
+  transition: transform var(--motion);
+}
+
+.stars-pill.is-cheer {
+  animation: cheer 520ms ease;
 }
 
 .choice-grid {
@@ -313,13 +324,37 @@ a {
   font-family: var(--font-display);
   font-weight: 800;
   font-size: 1.35rem;
+  position: relative;
+  transition: transform var(--motion);
 }
 
-.speak-btn span {
+.speak-btn:active {
+  transform: scale(0.98);
+}
+
+.speak-btn span:last-child {
   font-size: 0.95rem;
   font-family: var(--font-body);
   font-weight: 700;
   color: var(--muted);
+}
+
+.speak-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.speak-btn.is-speaking {
+  animation: pulse-ring 900ms ease-out infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: var(--shadow-soft), 0 0 0 0 rgba(214, 108, 60, 0.55);
+  }
+  100% {
+    box-shadow: var(--shadow-soft), 0 0 0 16px rgba(214, 108, 60, 0);
+  }
 }
 
 .count-stage {
@@ -367,18 +402,40 @@ a {
   gap: 0.65rem;
 }
 
+@media (min-width: 420px) {
+  .theme-picker {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 .theme-chip {
-  min-height: 4.25rem;
+  min-height: 4.75rem;
   border-radius: 1.2rem;
   background: var(--surface-strong);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.15rem;
+  gap: 0.3rem;
+  padding: 0.5rem 0.4rem;
   font-weight: 800;
   font-family: var(--font-display);
   box-shadow: 0 3px 0 rgba(20, 40, 30, 0.1);
+  transition: transform var(--motion);
+}
+
+.theme-chip:active {
+  transform: scale(0.97);
+}
+
+.theme-swatch {
+  width: 3.5rem;
+  height: 2.5rem;
+  border-radius: 0.85rem;
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+  box-shadow: inset 0 0 0 1px rgba(20, 40, 30, 0.08);
 }
 
 .theme-chip.is-selected {
@@ -419,24 +476,75 @@ a {
   font-size: 0.95rem;
 }
 
-.progress-strip {
-  margin-top: 1rem;
+.sticker-chart {
+  margin-top: 0.85rem;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: 0.55rem;
 }
 
-.progress-chip {
-  background: rgba(255, 255, 255, 0.55);
-  border-radius: 999px;
-  padding: 0.3rem 0.7rem;
-  font-size: 0.85rem;
+.sticker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  width: 4.1rem;
+}
+
+.sticker-face {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
   font-weight: 800;
+  font-size: 1.2rem;
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--muted);
+  border: 2px dashed rgba(20, 40, 30, 0.2);
 }
 
-.progress-chip.is-open {
+.sticker.is-open .sticker-face {
   background: var(--good);
   color: #fff;
+  border: 2px solid var(--good);
+  box-shadow: 0 3px 0 rgba(20, 40, 30, 0.12);
+}
+
+.sticker-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.welcome-banner {
+  background: var(--surface);
+  border-radius: 1.75rem;
+  padding: 1.15rem 1.25rem 0.9rem;
+  backdrop-filter: blur(8px);
+}
+
+.welcome-kicker {
+  margin: 0;
+  font-weight: 800;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.welcome-banner .family-row {
+  margin-bottom: 0;
+}
+
+.parent-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 2px dashed rgba(20, 40, 30, 0.14);
 }
 
 .feedback {
@@ -474,10 +582,37 @@ a {
   min-height: 2.75rem;
 }
 
-.toggle-row input[type='checkbox'] {
-  width: 1.35rem;
-  height: 1.35rem;
-  accent-color: var(--accent);
+.switch {
+  appearance: none;
+  width: 3.4rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: rgba(20, 40, 30, 0.18);
+  position: relative;
+  cursor: pointer;
+  transition: background var(--motion);
+  flex: 0 0 auto;
+}
+
+.switch::after {
+  content: '';
+  position: absolute;
+  top: 0.2rem;
+  left: 0.2rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(20, 40, 30, 0.25);
+  transition: transform var(--motion);
+}
+
+.switch:checked {
+  background: var(--good);
+}
+
+.switch:checked::after {
+  transform: translateX(1.4rem);
 }
 
 .family-row {
@@ -606,13 +741,43 @@ a {
   position: absolute;
   inset: 0 auto 0 0;
   width: calc(var(--p, 0) * 100%);
-  background: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.32);
+  border-right: 2px solid rgba(255, 255, 255, 0.55);
+  transition: width 60ms linear;
 }
 
 .coach-list {
   margin: 0.4rem 0 0;
   padding-left: 1.1rem;
   font-weight: 700;
+}
+
+.profile-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.85rem 0 0;
+}
+
+.profile-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.65rem;
+}
+
+.profile-row input {
+  flex: 1 1 8rem;
+  min-height: 2.75rem;
+  border-radius: 0.9rem;
+  border: 2px solid rgba(20, 40, 30, 0.12);
+  padding: 0.4rem 0.75rem;
+  background: var(--surface-strong);
+  color: var(--ink);
+}
+
+.profile-stars {
+  font-weight: 800;
 }
 
 html[data-contrast='high'] {
@@ -625,7 +790,10 @@ html[data-contrast='high'] .btn-tap,
 html[data-contrast='high'] .theme-chip,
 html[data-contrast='high'] .game-card-btn,
 html[data-contrast='high'] .family-portrait,
-html[data-contrast='high'] .panel {
+html[data-contrast='high'] .panel,
+html[data-contrast='high'] .speak-btn,
+html[data-contrast='high'] .welcome-banner,
+html[data-contrast='high'] .sticker-face {
   outline: 2px solid currentColor;
 }
 
@@ -637,7 +805,9 @@ html[data-contrast='high'] .theme-chip.is-selected {
 html[data-motion='reduce'] .family-face,
 html[data-motion='reduce'] .count-item,
 html[data-motion='reduce'] .theme-burst span,
-html[data-motion='reduce'] .enter {
+html[data-motion='reduce'] .enter,
+html[data-motion='reduce'] .speak-btn.is-speaking,
+html[data-motion='reduce'] .stars-pill.is-cheer {
   animation: none !important;
 }
 

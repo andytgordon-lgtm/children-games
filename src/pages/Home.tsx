@@ -37,60 +37,20 @@ export function Home({
 
   return (
     <section className="enter stack-gap">
-      <header>
-        <p style={{ margin: 0, fontWeight: 800, color: 'var(--muted)', fontSize: '0.95rem' }}>
-          Playing as {profile.name}
-        </p>
+      <header className="welcome-banner">
+        <p className="welcome-kicker">Playing as {profile.name}</p>
         <h1 className="brand brand-hero">Sound World</h1>
         <p className="lede">
           {theme.emoji} {theme.tagline}
         </p>
+        <FamilyCastRow
+          cast={cast}
+          theme={profile.theme}
+          photos={photos}
+          cartoons={cartoons}
+          highlight={['mum', 'dad', 'brother', 'sister']}
+        />
       </header>
-
-      <FamilyCastRow
-        cast={cast}
-        theme={profile.theme}
-        photos={photos}
-        cartoons={cartoons}
-        highlight={['mum', 'dad', 'brother', 'sister']}
-      />
-
-      <div className="row-actions">
-        <div className="stars-pill">★ {profile.stars} stars</div>
-        <button
-          type="button"
-          className="btn btn-secondary"
-          onClick={onToggleMusic}
-          aria-pressed={musicEnabled}
-          aria-label={musicEnabled ? 'Mute music' : 'Unmute music'}
-          title={musicEnabled ? 'Mute music' : 'Unmute music'}
-        >
-          {musicEnabled ? 'Music on' : 'Music off'}
-        </button>
-        <button type="button" className="btn btn-ghost" onClick={onOpenSettings}>
-          Parent settings
-        </button>
-        <button type="button" className="btn btn-ghost" onClick={onSwitchProfile}>
-          Switch child
-        </button>
-      </div>
-
-      <div className="panel">
-        <strong style={{ fontFamily: 'var(--font-display)', fontSize: '1.15rem' }}>Pick a world</strong>
-        <div className="theme-picker" style={{ marginTop: '0.75rem' }}>
-          {THEMES.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              className={`theme-chip ${profile.theme === t.id ? 'is-selected' : ''}`}
-              onClick={() => onTheme(t.id)}
-            >
-              <span style={{ fontSize: '1.5rem' }}>{t.emoji}</span>
-              {t.label}
-            </button>
-          ))}
-        </div>
-      </div>
 
       <nav className="game-nav" aria-label="Games">
         <button type="button" className="game-card-btn" onClick={() => onPlay('sound-match')}>
@@ -110,23 +70,60 @@ export function Home({
       </nav>
 
       <div className="panel">
-        <strong style={{ fontFamily: 'var(--font-display)' }}>Letters and Sounds progress</strong>
-        <div className="progress-strip" aria-label="Unlocked sound sets">
-          {SETS.map((set) => (
-            <span
-              key={set}
-              className={`progress-chip ${set <= unlocked ? 'is-open' : ''}`}
-              title={
-                set <= unlocked
-                  ? `Set ${set} unlocked`
-                  : `Set ${set} opens at ${STARS_TO_UNLOCK_SET[set]} stars`
-              }
+        <strong style={{ fontFamily: 'var(--font-display)', fontSize: '1.15rem' }}>Pick a world</strong>
+        <div className="theme-picker" style={{ marginTop: '0.75rem' }}>
+          {THEMES.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              className={`theme-chip ${profile.theme === t.id ? 'is-selected' : ''}`}
+              onClick={() => onTheme(t.id)}
+              aria-pressed={profile.theme === t.id}
             >
-              {setTitle(set)}
-              {set <= unlocked ? ' ✓' : ` · ${STARS_TO_UNLOCK_SET[set]}★`}
-            </span>
+              <span className="theme-swatch" style={{ background: t.sky }} aria-hidden>
+                {t.emoji}
+              </span>
+              {t.label}
+            </button>
           ))}
         </div>
+      </div>
+
+      <div className="panel">
+        <strong style={{ fontFamily: 'var(--font-display)', fontSize: '1.15rem' }}>
+          ★ {profile.stars} stars earned
+        </strong>
+        <div className="sticker-chart" aria-label="Unlocked sound sets">
+          {SETS.map((set) => {
+            const open = set <= unlocked
+            return (
+              <div
+                key={set}
+                className={`sticker ${open ? 'is-open' : ''}`}
+                title={
+                  open ? `Set ${set} unlocked` : `Set ${set} opens at ${STARS_TO_UNLOCK_SET[set]} stars`
+                }
+              >
+                <span className="sticker-face" aria-hidden>
+                  {open ? '✓' : '★'}
+                </span>
+                <span className="sticker-label">{setTitle(set)}</span>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      <div className="parent-row">
+        <button type="button" className="btn btn-secondary" onClick={onToggleMusic} aria-pressed={musicEnabled}>
+          {musicEnabled ? 'Music on' : 'Music off'}
+        </button>
+        <button type="button" className="btn btn-ghost" onClick={onOpenSettings}>
+          Parent settings
+        </button>
+        <button type="button" className="btn btn-ghost" onClick={onSwitchProfile}>
+          Switch child
+        </button>
       </div>
     </section>
   )
