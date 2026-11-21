@@ -16,6 +16,8 @@ export type AppState = {
   profiles: ChildProfile[]
   activeProfileId: string | null
   cast: FamilyCast
+  musicEnabled: boolean
+  sfxEnabled: boolean
 }
 
 const STORAGE_KEY = 'sound-world-v1'
@@ -44,6 +46,8 @@ export function loadState(): AppState {
       profiles: Array.isArray(parsed.profiles) ? parsed.profiles : [],
       activeProfileId: parsed.activeProfileId ?? null,
       cast: { ...DEFAULT_CAST, ...(parsed.cast ?? {}) },
+      musicEnabled: parsed.musicEnabled !== false,
+      sfxEnabled: parsed.sfxEnabled !== false,
     }
   } catch {
     return emptyState()
@@ -51,7 +55,13 @@ export function loadState(): AppState {
 }
 
 function emptyState(): AppState {
-  return { profiles: [], activeProfileId: null, cast: { ...DEFAULT_CAST } }
+  return {
+    profiles: [],
+    activeProfileId: null,
+    cast: { ...DEFAULT_CAST },
+    musicEnabled: true,
+    sfxEnabled: true,
+  }
 }
 
 export function saveState(state: AppState): void {

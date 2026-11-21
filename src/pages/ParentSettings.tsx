@@ -5,10 +5,14 @@ type Props = {
   cast: FamilyCast
   profiles: ChildProfile[]
   activeId: string | null
+  musicEnabled: boolean
+  sfxEnabled: boolean
   onCastChange: (role: CastRole, name: string) => void
   onSelectProfile: (id: string) => void
   onAddProfile: (name: string) => void
   onRenameProfile: (id: string, name: string) => void
+  onMusicEnabled: (enabled: boolean) => void
+  onSfxEnabled: (enabled: boolean) => void
   onBack: () => void
 }
 
@@ -16,10 +20,14 @@ export function ParentSettings({
   cast,
   profiles,
   activeId,
+  musicEnabled,
+  sfxEnabled,
   onCastChange,
   onSelectProfile,
   onAddProfile,
   onRenameProfile,
+  onMusicEnabled,
+  onSfxEnabled,
   onBack,
 }: Props) {
   return (
@@ -31,6 +39,30 @@ export function ParentSettings({
       </div>
       <h2 className="game-title">Parent settings</h2>
       <p className="lede">Rename your family cast and manage child profiles. Everything stays on this device.</p>
+
+      <div className="panel">
+        <strong style={{ fontFamily: 'var(--font-display)', fontSize: '1.15rem' }}>Sound</strong>
+        <div className="stack-gap" style={{ marginTop: '0.85rem', gap: '0.65rem' }}>
+          <label className="toggle-row" htmlFor="music-toggle">
+            <span>Background music</span>
+            <input
+              id="music-toggle"
+              type="checkbox"
+              checked={musicEnabled}
+              onChange={(e) => onMusicEnabled(e.target.checked)}
+            />
+          </label>
+          <label className="toggle-row" htmlFor="sfx-toggle">
+            <span>Game sounds</span>
+            <input
+              id="sfx-toggle"
+              type="checkbox"
+              checked={sfxEnabled}
+              onChange={(e) => onSfxEnabled(e.target.checked)}
+            />
+          </label>
+        </div>
+      </div>
 
       <div className="panel">
         <strong style={{ fontFamily: 'var(--font-display)', fontSize: '1.15rem' }}>Family cast</strong>

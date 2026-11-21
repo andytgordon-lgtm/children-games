@@ -1,5 +1,8 @@
+import { duckForSpeech } from './audio'
+
 let preferredVoice: SpeechSynthesisVoice | null = null
 let voicesReady = false
+let duckingActive = false
 
 function loadVoices(): SpeechSynthesisVoice[] {
   if (typeof window === 'undefined' || !window.speechSynthesis) return []
@@ -15,9 +18,20 @@ function pickEnGbVoice(): SpeechSynthesisVoice | null {
   const pool = enGb.length ? enGb : en
   if (!pool.length) return voices[0] ?? null
 
-  // Prefer child-friendly / clear voices when available
   const preferred = pool.find((v) => /Female|Samantha|Google UK English Female|Karen|Serena/i.test(v.name))
   return preferred ?? pool[0] ?? null
+}
+
+function beginDuck(): void {
+  if (duckingActive) return
+  duckingActive = true
+  duckForSpeech(true)
+}
+
+function endDuck(): void {
+  if (!duckingActive) return
+  duckingActive = false
+  duckForSpeech(false)
 }
 
 export function initSpeech(): void {
@@ -39,11 +53,16 @@ function speakRaw(text: string, rate = 0.85): void {
   if (!voicesReady) preferredVoice = pickEnGbVoice()
 
   window.speechSynthesis.cancel()
+  endDuck()
+
   const utter = new SpeechSynthesisUtterance(text)
   utter.lang = preferredVoice?.lang ?? 'en-GB'
   utter.rate = rate
   utter.pitch = 1.05
   if (preferredVoice) utter.voice = preferredVoice
+  beginDuck()
+  utter.onend = () => endDuck()
+  utter.onerror = () => endDuck()
   window.speechSynthesis.speak(utter)
 }
 
@@ -61,13 +80,19 @@ export function speakWord(word: string): void {
 export async function speakBlend(sounds: string[], word: string): Promise<void> {
   if (!isSpeechAvailable()) return
   window.speechSynthesis.cancel()
+  endDuck()
+  beginDuck()
 
-  for (const sound of sounds) {
-    await speakAndWait(sound, 0.65)
-    await pause(220)
+  try {
+    for (const sound of sounds) {
+      await speakAndWait(sound, 0.65)
+      await pause(220)
+    }
+    await pause(180)
+    await speakAndWait(word, 0.9)
+  } finally {
+    endDuck()
   }
-  await pause(180)
-  await speakAndWait(word, 0.9)
 }
 
 function speakAndWait(text: string, rate: number): Promise<void> {
@@ -93,4 +118,5 @@ function pause(ms: number): Promise<void> {
 
 export function stopSpeech(): void {
   if (isSpeechAvailable()) window.speechSynthesis.cancel()
+  endDuck()
 }

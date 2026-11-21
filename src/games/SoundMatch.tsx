@@ -7,6 +7,7 @@ import {
   type Grapheme,
 } from '../lib/phonics'
 import { speakPhoneme } from '../lib/speech'
+import { playSfx } from '../lib/audio'
 import type { FamilyCast } from '../lib/profiles'
 import { FamilyCastRow } from '../components/FamilyCast'
 
@@ -42,7 +43,9 @@ export function SoundMatch({ stars, cast, onStar, onBack }: Props) {
   const choose = (letter: string) => {
     if (picked) return
     setPicked(letter)
+    playSfx('tap')
     if (letter === round.target.letter) {
+      playSfx('correct')
       setFeedback('Brilliant!')
       setCheer(true)
       onStar()
@@ -53,6 +56,7 @@ export function SoundMatch({ stars, cast, onStar, onBack }: Props) {
         setCheer(false)
       }, 900)
     } else {
+      playSfx('wrong')
       setFeedback('Try again — listen once more')
       window.setTimeout(() => {
         setPicked(null)

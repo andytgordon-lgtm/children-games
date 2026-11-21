@@ -15,7 +15,7 @@ Interactive **UK England phonics** and early counting for young children — wit
 
 Progress and profiles stay **on this device** (`localStorage`). Other families can open the same public link and set up their own profiles.
 
-Speech uses your device’s **en-GB** voice when available (tap the speaker buttons).
+Speech uses your device’s **en-GB** voice when available (tap the speaker buttons). Soft theme music and game sounds start after the first tap; mute them from the home screen or Parent settings.
 
 ## For developers
 

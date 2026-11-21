@@ -8,13 +8,24 @@ export type GameId = 'sound-match' | 'blend-quest' | 'family-count'
 type Props = {
   profile: ChildProfile
   cast: FamilyCast
+  musicEnabled: boolean
   onPlay: (game: GameId) => void
   onTheme: (theme: ThemeId) => void
+  onToggleMusic: () => void
   onOpenSettings: () => void
   onSwitchProfile: () => void
 }
 
-export function Home({ profile, cast, onPlay, onTheme, onOpenSettings, onSwitchProfile }: Props) {
+export function Home({
+  profile,
+  cast,
+  musicEnabled,
+  onPlay,
+  onTheme,
+  onToggleMusic,
+  onOpenSettings,
+  onSwitchProfile,
+}: Props) {
   const theme = getTheme(profile.theme)
   const unlocked = maxUnlockedSet(profile.stars)
 
@@ -34,6 +45,16 @@ export function Home({ profile, cast, onPlay, onTheme, onOpenSettings, onSwitchP
 
       <div className="row-actions">
         <div className="stars-pill">★ {profile.stars} stars</div>
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={onToggleMusic}
+          aria-pressed={musicEnabled}
+          aria-label={musicEnabled ? 'Mute music' : 'Unmute music'}
+          title={musicEnabled ? 'Mute music' : 'Unmute music'}
+        >
+          {musicEnabled ? 'Music on' : 'Music off'}
+        </button>
         <button type="button" className="btn btn-ghost" onClick={onOpenSettings}>
           Parent settings
         </button>

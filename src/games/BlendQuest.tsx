@@ -7,6 +7,7 @@ import {
   type CvcWord,
 } from '../lib/phonics'
 import { speakBlend, speakWord } from '../lib/speech'
+import { playSfx } from '../lib/audio'
 import type { FamilyCast } from '../lib/profiles'
 import { FamilyCastRow } from '../components/FamilyCast'
 
@@ -52,7 +53,9 @@ export function BlendQuest({ stars, cast, onStar, onBack }: Props) {
   const choose = (word: string) => {
     if (picked || busy) return
     setPicked(word)
+    playSfx('tap')
     if (word === round.target.word) {
+      playSfx('correct')
       setFeedback('Yes — blended!')
       setCheer(true)
       speakWord(word)
@@ -64,6 +67,7 @@ export function BlendQuest({ stars, cast, onStar, onBack }: Props) {
         setCheer(false)
       }, 1000)
     } else {
+      playSfx('wrong')
       setFeedback('Not that one — listen again')
       window.setTimeout(() => {
         setPicked(null)

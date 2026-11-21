@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { pickRandom, shuffle } from '../lib/phonics'
 import { speakWord } from '../lib/speech'
+import { playSfx } from '../lib/audio'
 import type { FamilyCast } from '../lib/profiles'
 import { CAST_ROLES } from '../lib/profiles'
 import { FamilyCastRow } from '../components/FamilyCast'
@@ -48,7 +49,9 @@ export function FamilyCount({ stars, theme, cast, onStar, onBack }: Props) {
   const choose = (n: number) => {
     if (picked !== null) return
     setPicked(n)
+    playSfx('tap')
     if (n === round.count) {
+      playSfx('correct')
       setFeedback('Perfect counting!')
       setCheer(true)
       speakWord(String(n))
@@ -60,6 +63,7 @@ export function FamilyCount({ stars, theme, cast, onStar, onBack }: Props) {
         setCheer(false)
       }, 900)
     } else {
+      playSfx('wrong')
       setFeedback('Count again carefully')
       window.setTimeout(() => {
         setPicked(null)

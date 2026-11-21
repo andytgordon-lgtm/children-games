@@ -9,6 +9,13 @@ import {
   type CastRole,
 } from './lib/profiles'
 import { initSpeech } from './lib/speech'
+import {
+  setMusicEnabled,
+  setSfxEnabled,
+  setTheme as setAudioTheme,
+  stopAudio,
+  unlockAudio,
+} from './lib/audio'
 import { SoundMatch } from './games/SoundMatch'
 import { BlendQuest } from './games/BlendQuest'
 import { FamilyCount } from './games/FamilyCount'
@@ -28,6 +35,10 @@ export default function App() {
 
   useEffect(() => {
     initSpeech()
+    const initial = loadState()
+    setMusicEnabled(initial.musicEnabled)
+    setSfxEnabled(initial.sfxEnabled)
+    return () => stopAudio()
   }, [])
 
   useEffect(() => {
@@ -36,7 +47,20 @@ export default function App() {
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
+    setAudioTheme(theme)
   }, [theme])
+
+  useEffect(() => {
+    setMusicEnabled(state.musicEnabled)
+  }, [state.musicEnabled])
+
+  useEffect(() => {
+    setSfxEnabled(state.sfxEnabled)
+  }, [state.sfxEnabled])
+
+  const unlock = () => {
+    void unlockAudio(theme)
+  }
 
   const updateActive = (updater: (p: NonNullable<typeof active>) => NonNullable<typeof active>) => {
     setState((prev) => {
@@ -53,9 +77,13 @@ export default function App() {
 
   if (!active) {
     return (
-      <div className="app-shell">
+      <div
+        className="app-shell"
+        onPointerDownCapture={unlock}
+      >
         <Onboarding
           onStart={(name, chosenTheme) => {
+            void unlockAudio(chosenTheme)
             const profile = createProfile(name, chosenTheme)
             setState((prev) => ({
               ...prev,
@@ -70,13 +98,24 @@ export default function App() {
   }
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" onPointerDownCapture={unlock}>
       {screen === 'home' && (
         <Home
           profile={active}
           cast={state.cast}
-          onPlay={setScreen}
-          onTheme={(t) => updateActive((p) => ({ ...p, theme: t }))}
+          musicEnabled={state.musicEnabled}
+          onPlay={(game) => {
+            void unlockAudio(theme)
+            setScreen(game)
+          }}
+          onTheme={(t) => {
+            void unlockAudio(t)
+            updateActive((p) => ({ ...p, theme: t }))
+          }}
+          onToggleMusic={() => {
+            void unlockAudio(theme)
+            setState((prev) => ({ ...prev, musicEnabled: !prev.musicEnabled }))
+          }}
           onOpenSettings={() => setScreen('settings')}
           onSwitchProfile={() => setScreen('settings')}
         />
@@ -87,6 +126,8 @@ export default function App() {
           cast={state.cast}
           profiles={state.profiles}
           activeId={state.activeProfileId}
+          musicEnabled={state.musicEnabled}
+          sfxEnabled={state.sfxEnabled}
           onCastChange={(role: CastRole, name: string) =>
             setState((prev) => ({ ...prev, cast: { ...prev.cast, [role]: name } }))
           }
@@ -108,6 +149,14 @@ export default function App() {
               profiles: prev.profiles.map((p) => (p.id === id ? { ...p, name: name || p.name } : p)),
             }))
           }
+          onMusicEnabled={(enabled) => {
+            void unlockAudio(theme)
+            setState((prev) => ({ ...prev, musicEnabled: enabled }))
+          }}
+          onSfxEnabled={(enabled) => {
+            void unlockAudio(theme)
+            setState((prev) => ({ ...prev, sfxEnabled: enabled }))
+          }}
           onBack={() => setScreen('home')}
         />
       )}
