@@ -2,6 +2,8 @@
 
 Interactive **UK England phonics** and early counting for young children — with friendly theme worlds (trains, planes, dinosaurs, farm) and a family cast that guides play.
 
+The phased plan is in [ROADMAP.md](./ROADMAP.md).
+
 ## For parents
 
 1. Open the app and create a child profile.
