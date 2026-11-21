@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import {
   maxUnlockedSet,
   pickRandom,
@@ -41,7 +41,6 @@ export function BlendQuest({ stars, cast, onStar, onBack }: Props) {
   const [feedback, setFeedback] = useState('')
   const [busy, setBusy] = useState(false)
   const [cheer, setCheer] = useState(false)
-  const unlocked = useMemo(() => maxUnlockedSet(stars), [stars])
 
   const playBlend = async () => {
     if (busy) return
@@ -89,9 +88,7 @@ export function BlendQuest({ stars, cast, onStar, onBack }: Props) {
       <div className="stack-gap" style={{ marginTop: '1rem' }}>
         <button type="button" className="speak-btn" onClick={() => void playBlend()} disabled={busy}>
           🔊 Sound it out
-          <span>
-            {round.target.sounds.join(' · ')} · set {unlocked}
-          </span>
+          <span>{round.target.sounds.join(' · ')}</span>
         </button>
 
         <div className="choice-grid three" role="group" aria-label="Word choices">

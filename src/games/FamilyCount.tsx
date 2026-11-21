@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { pickRandom, shuffle } from '../lib/phonics'
 import { speakWord } from '../lib/speech'
 import type { FamilyCast } from '../lib/profiles'
@@ -20,7 +20,7 @@ type Round = {
   choices: number[]
 }
 
-function makeRound(theme: ThemeId, _cast: FamilyCast): Round {
+function makeRound(theme: ThemeId): Round {
   const count = 1 + Math.floor(Math.random() * 10)
   const themeGlyphs = THEME_COUNT_GLYPHS[theme]
   const familyGlyphs = CAST_ROLES.map((r) => {
@@ -40,12 +40,10 @@ function makeRound(theme: ThemeId, _cast: FamilyCast): Round {
 }
 
 export function FamilyCount({ stars, theme, cast, onStar, onBack }: Props) {
-  const [round, setRound] = useState<Round>(() => makeRound(theme, cast))
+  const [round, setRound] = useState<Round>(() => makeRound(theme))
   const [picked, setPicked] = useState<number | null>(null)
   const [feedback, setFeedback] = useState('')
   const [cheer, setCheer] = useState(false)
-
-  const prompt = useMemo(() => `How many can you count?`, [])
 
   const choose = (n: number) => {
     if (picked !== null) return
@@ -56,7 +54,7 @@ export function FamilyCount({ stars, theme, cast, onStar, onBack }: Props) {
       speakWord(String(n))
       onStar()
       window.setTimeout(() => {
-        setRound(makeRound(theme, cast))
+        setRound(makeRound(theme))
         setPicked(null)
         setFeedback('')
         setCheer(false)
@@ -79,7 +77,7 @@ export function FamilyCount({ stars, theme, cast, onStar, onBack }: Props) {
         <div className="stars-pill">★ {stars}</div>
       </div>
       <h2 className="game-title">Family Count</h2>
-      <p className="lede">{prompt}</p>
+      <p className="lede">How many can you count?</p>
       <FamilyCastRow cast={cast} cheer={cheer} />
 
       <div className="count-stage" aria-label={`${round.count} items to count`}>

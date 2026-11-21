@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import {
   graphemesUpTo,
   maxUnlockedSet,
@@ -36,7 +36,6 @@ export function SoundMatch({ stars, cast, onStar, onBack }: Props) {
   const [picked, setPicked] = useState<string | null>(null)
   const [feedback, setFeedback] = useState('')
   const [cheer, setCheer] = useState(false)
-  const unlocked = useMemo(() => maxUnlockedSet(stars), [stars])
 
   const playSound = () => speakPhoneme(round.target.sound)
 
@@ -80,7 +79,7 @@ export function SoundMatch({ stars, cast, onStar, onBack }: Props) {
       <div className="stack-gap" style={{ marginTop: '1rem' }}>
         <button type="button" className="speak-btn" onClick={playSound}>
           🔊 Hear the sound
-          <span>Set {unlocked} sounds unlocked</span>
+          <span>Tap me, then pick the letter</span>
         </button>
 
         <div className="choice-grid" role="group" aria-label="Letter choices">
