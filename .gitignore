@@ -11,6 +11,21 @@ node_modules
 dist
 dist-ssr
 *.local
+.env
+
+# Vite and Vitest scratch files
+vite.config.js.timestamp-*.mjs
+vite.config.mjs.timestamp-*.mjs
+vite.config.cjs.timestamp-*.mjs
+vite.config.ts.timestamp-*.mjs
+vite.config.mts.timestamp-*.mjs
+vite.config.cts.timestamp-*.mjs
+vitest.config.js.timestamp-*.mjs
+vitest.config.mjs.timestamp-*.mjs
+vitest.config.cjs.timestamp-*.mjs
+vitest.config.ts.timestamp-*.mjs
+vitest.config.mts.timestamp-*.mjs
+vitest.config.cts.timestamp-*.mjs
 
 # Editor directories and files
 .vscode/*
